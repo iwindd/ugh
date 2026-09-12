@@ -1,0 +1,11 @@
+name: ugh-cloud
+version: 0.1.0
+manifest_version: 2
+api_version: 1
+license: MIT
+description: Upload active profile skills to per-agent GitHub pull requests.
+tags: [skills, github, backup]
+config_schema:
+  github-repo: {type: str, default: "", description: "Target GitHub repository owner/name"}
+  agent-name: {type: str, default: "", description: "Display name for the active agent"}
+  exclude: {type: list, default: [], description: "Skill paths or glob patterns excluded from upload"}

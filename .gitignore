@@ -1,0 +1,43 @@
+# Secrets and local configuration
+.env
+.env.*
+*.env
+*.secret
+*.secrets
+*.token
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# Hermes/plugin runtime data
+.hermes/
+state/
+data/
+logs/
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+junit.xml
+
+# Temporary/editor files
+*.tmp
+*.temp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
