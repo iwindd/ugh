@@ -27,7 +27,7 @@ class Context:
 
     def __init__(self, home, values=None):
         self.hermes_home = str(home)
-        self.values = values or {"github-repo": "iwindd/ugh-cloud", "agent-name": "Lyla", "exclude": []}
+        self.values = values or {"github-repo": "iwindd/ugh", "agent-name": "Lyla", "exclude": []}
 
     def get_config(self, key, default=None):
         return self.values.get(key, default)
@@ -47,7 +47,7 @@ class ModularFlowTests(unittest.TestCase):
     def test_config_resolves_active_profile_settings(self):
         ctx = Context(self.root.parent)
         self.assertEqual(skill_root(ctx), self.root.parent / "skills")
-        self.assertEqual(repository(ctx), "iwindd/ugh-cloud")
+        self.assertEqual(repository(ctx), "iwindd/ugh")
         self.assertEqual(agent_name(ctx), "Lyla")
         self.assertEqual(exclusions(ctx), [])
 
@@ -105,7 +105,7 @@ class ModularFlowTests(unittest.TestCase):
         self.assertEqual(seen[0][0][1], "eve")
 
     def test_command_excludes_without_force(self):
-        ctx = Context(self.root.parent, {"github-repo": "iwindd/ugh-cloud", "agent-name": "Lyla", "exclude": ["productivity/*"]})
+        ctx = Context(self.root.parent, {"github-repo": "iwindd/ugh", "agent-name": "Lyla", "exclude": ["productivity/*"]})
         with patch("ugh_cloud.command.upload_skill") as upload:
             result = json.loads(handle_ugh("skill upload report", ctx=ctx))
         upload.assert_not_called()

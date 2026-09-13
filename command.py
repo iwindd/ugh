@@ -41,7 +41,7 @@ def handle_ugh(raw_args, **kwargs):
             i += 1
         repo = repository(ctx)
         if not repo:
-            raise ValueError("configure github-repo in the ugh-cloud plugin settings")
+            raise ValueError("configure github-repo in the ugh plugin settings")
         target = target or agent_name(ctx)
         root = skill_root(ctx)
         if remove and selector == "all":

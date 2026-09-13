@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`ugh-cloud` is a Hermes plugin that uploads skills from the active Hermes profile into per-agent paths in a GitHub repository through explicit, reviewable pull requests.
+`ugh` is a Hermes plugin that uploads skills from the active Hermes profile into per-agent paths in a GitHub repository through explicit, reviewable pull requests.
 
 ## Vocabulary
 

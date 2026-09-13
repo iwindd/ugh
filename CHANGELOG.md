@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to ugh-cloud will be documented here.
+All notable changes to ugh will be documented here.
 
 ## [Unreleased]
 

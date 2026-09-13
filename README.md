@@ -1,6 +1,6 @@
-# ugh-cloud
+# ugh
 
-`ugh-cloud` is a Hermes Agent plugin for explicitly uploading skills from the active Hermes profile into reviewable GitHub pull requests under a per-agent namespace.
+`ugh` is a Hermes Agent plugin for explicitly uploading skills from the active Hermes profile into reviewable GitHub pull requests under a per-agent namespace.
 
 ## Scope
 
@@ -23,12 +23,12 @@ The repository contains the modular upload flow with offline tests and GitHub Ac
 
 Configure the repository in the active Hermes profile:
 
-    hermes config set plugins.entries.ugh-cloud.settings.github-repo owner/repository
-    hermes config set plugins.entries.ugh-cloud.settings.agent-name Lyla
+    hermes config set plugins.entries.ugh.settings.github-repo owner/repository
+    hermes config set plugins.entries.ugh.settings.agent-name Lyla
 
 Optional exclusions:
 
-    hermes config set plugins.entries.ugh-cloud.settings.exclude '["private/*"]'
+    hermes config set plugins.entries.ugh.settings.exclude '["private/*"]'
 
 Store the token outside normal configuration:
 

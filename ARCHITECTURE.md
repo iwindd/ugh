@@ -2,11 +2,11 @@
 
 ## Purpose
 
-`ugh-cloud` is a profile-local Hermes plugin. The user invokes `/ugh skill upload`; the plugin discovers skills from the active profile, plans a synchronization, and uses GitHub pull requests as the review boundary.
+`ugh` is a profile-local Hermes plugin. The user invokes `/ugh skill upload`; the plugin discovers skills from the active profile, plans a synchronization, and uses GitHub pull requests as the review boundary.
 
 ## Current structure
 
-    ugh-cloud/
+    ugh/
     ├── plugin.yaml
     ├── __init__.py                 # Hermes registration only
     ├── command.py                  # command parsing and result formatting
