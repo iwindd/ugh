@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile Python modules
+        run: python -m py_compile __init__.py command.py config.py domain/*.py skills/*.py github/*.py orchestration/*.py tests/*.py
+      - name: Run offline tests
+        run: python -m unittest discover -s tests -v
+      - name: Scan for likely secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-files -z | xargs -0 grep -IlE 'github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9_]+|BEGIN [A-Z ]*PRIVATE KEY'; then
+            echo 'Potential secret material found in tracked files.'
+            exit 1
+          fi
+      - name: Hermes plugin doctor
+        shell: bash
+        run: |
+          if command -v hermes >/dev/null 2>&1; then
+            hermes plugins doctor . --ci
+          else
+            echo 'Hermes CLI is not installed in this runner; local AGENTS.md validation remains required.'
+          fi

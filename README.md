@@ -17,7 +17,7 @@ The plugin never modifies the curated `/skills/` catalog. It manages only `agent
 
 ## Current status
 
-The repository contains a working prototype. The next phase is a structure refactor that separates command parsing, skill discovery, synchronization planning, GitHub transport, and PR orchestration without changing the user-facing contract.
+The repository contains the modular upload flow with offline tests and GitHub Actions validation. The GitHub adapter split remains tracked as the next structural improvement.
 
 ## Configuration
 
@@ -46,3 +46,10 @@ Required GitHub permissions are Contents: Read and write and Pull requests: Read
 Read `AGENTS.md` before changing code. Follow `ARCHITECTURE.md` for module boundaries. Use `CONTEXT.md` for current domain vocabulary and decisions; approved implementation work is tracked in GitHub Issues.
 
 The user-facing behavior is defined by approved GitHub Issues and the command tests. Research evidence is under `.research/`.
+
+Run locally:
+
+    python -m unittest discover -s tests -v
+    hermes plugins doctor . --ci
+
+GitHub Actions runs the offline checks for pull requests and pushes to `main`.
