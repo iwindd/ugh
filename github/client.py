@@ -1,5 +1,4 @@
 import base64
-import hashlib
 import json
 import os
 import re
@@ -9,6 +8,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+from ..domain.planning import action_for
+from ..skills.safety import suspicious_files
+from ..skills.snapshot import files as snapshot_files
 
 
 class UploadError(RuntimeError):
@@ -188,8 +191,8 @@ def upload_skill(repo, agent_name, skill_id, skill_path, force=False, source_pro
         raise UploadError("skill ID must include category/skill")
     category, short_id = (_safe_component(x) for x in parts)
     agent = _safe_component(agent_name)
-    local = {} if remove else _files(Path(skill_path))
-    suspicious = _suspicious(local)
+    local = {} if remove else snapshot_files(Path(skill_path))
+    suspicious = suspicious_files(local)
     if suspicious and not force:
         raise UploadError("possible secret files detected; use --force to confirm: " + ", ".join(suspicious))
 
@@ -231,7 +234,7 @@ def upload_skill(repo, agent_name, skill_id, skill_path, force=False, source_pro
             base_ref = gh.initialize_branch(base)
         parent = base_ref["object"]["sha"]
         remote = _remote_files(gh, parent, target)
-    action = _action(local, remote)
+    action = action_for(local, remote)
     if action is None:
         return {"skill": skill_id, "action": "noop", "status": "success", "message": "remote content is identical", "pr_url": pr_url}
 
