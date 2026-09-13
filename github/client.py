@@ -134,48 +134,10 @@ class GitHub:
                 self.token = previous
 
 
-def _files(root):
-    if root is None:
-        return {}
-    result = {}
-    for path in root.rglob("*"):
-        if path.is_symlink():
-            raise UploadError(f"symlinks are not allowed in skills: {path.name}")
-        if path.is_file():
-            rel = path.relative_to(root).as_posix()
-            result[rel] = path.read_bytes()
-    if "SKILL.md" not in result:
-        raise UploadError("skill directory must contain SKILL.md")
-    return result
-
-
-def _suspicious(files):
-    patterns = (".env", ".pem", ".key", ".p12", ".pfx", "credentials", "token", "secret")
-    key_re = re.compile(rb"-----BEGIN .*PRIVATE KEY-----|(?:api[_-]?key|access[_-]?token|secret)\\s*[:=]\\s*[^\\s]+", re.I)
-    found = []
-    for name, content in files.items():
-        lower = name.lower()
-        if any(part in lower for part in patterns) or key_re.search(content):
-            found.append(name)
-    return sorted(set(found))
-
-
 def _remote_files(github, commit_sha, prefix):
     tree = github.tree(github.commit(commit_sha)["tree"]["sha"])
     marker = prefix.rstrip("/") + "/"
     return {item["path"][len(marker):]: item["sha"] for item in tree if item.get("type") == "blob" and item["path"].startswith(marker)}
-
-
-def _action(local, remote):
-    local_sha = {
-        name: hashlib.sha1(f"blob {len(content)}\0".encode() + content).hexdigest()
-        for name, content in local.items()
-    }
-    if not remote:
-        return "add" if local else None
-    if not local:
-        return "remove"
-    return "patch" if local_sha != remote else None
 
 
 def _safe_component(value):
@@ -191,7 +153,10 @@ def upload_skill(repo, agent_name, skill_id, skill_path, force=False, source_pro
         raise UploadError("skill ID must include category/skill")
     category, short_id = (_safe_component(x) for x in parts)
     agent = _safe_component(agent_name)
-    local = {} if remove else snapshot_files(Path(skill_path))
+    try:
+        local = {} if remove else snapshot_files(Path(skill_path))
+    except RuntimeError as exc:
+        raise UploadError(str(exc)) from exc
     suspicious = suspicious_files(local)
     if suspicious and not force:
         raise UploadError("possible secret files detected; use --force to confirm: " + ", ".join(suspicious))
