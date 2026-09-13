@@ -20,6 +20,7 @@ from ugh_cloud.domain.planning import action_for, git_blob_sha
 from ugh_cloud.skills.discovery import all_skills, find_skill
 from ugh_cloud.skills.safety import excluded, suspicious_files
 from ugh_cloud.skills.snapshot import files
+from ugh_cloud.orchestration.update import check_for_update
 
 
 class Context:
@@ -110,6 +111,37 @@ class ModularFlowTests(unittest.TestCase):
             result = json.loads(handle_ugh("skill upload report", ctx=ctx))
         upload.assert_not_called()
         self.assertEqual(result["results"][0]["status"], "excluded")
+
+    def test_update_check_selects_latest_stable_release_without_token(self):
+        releases = [
+            {"tag_name": "v0.3.0", "prerelease": True, "draft": False, "html_url": "pre"},
+            {"tag_name": "v0.1.1", "prerelease": False, "draft": False, "html_url": "old"},
+            {"tag_name": "v0.2.0", "prerelease": False, "draft": False, "html_url": "latest"},
+        ]
+        result = check_for_update("0.1.0", releases)
+        self.assertEqual(result["status"], "update_available")
+        self.assertEqual(result["available_version"], "0.2.0")
+        self.assertEqual(result["release_url"], "latest")
+        self.assertEqual(result["update_command"], "hermes plugins update ugh")
+
+    def test_update_check_reports_current_and_ignores_malformed_releases(self):
+        result = check_for_update("v0.2.0", [
+            {"tag_name": "not-a-version", "prerelease": False, "draft": False},
+            {"tag_name": "v0.2.0", "prerelease": False, "draft": False, "html_url": "release"},
+        ])
+        self.assertEqual(result["status"], "current")
+        self.assertEqual(result["installed_version"], "0.2.0")
+
+    def test_update_command_uses_read_only_injected_release_client(self):
+        class FakeReleases:
+            def list(self):
+                return [{"tag_name": "v0.2.0", "draft": False, "prerelease": False, "html_url": "url"}]
+
+        result = json.loads(handle_ugh(
+            "update check", ctx=Context(self.root.parent), update_client=FakeReleases()
+        ))
+        self.assertEqual(result["status"], "update_available")
+        self.assertNotIn("token", json.dumps(result).lower())
 
 
 if __name__ == "__main__":

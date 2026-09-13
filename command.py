@@ -6,17 +6,23 @@ import shlex
 from .config import agent_name, exclusions, repository, skill_root
 from .github import UploadError
 from .orchestration import upload_skill
+from .github.releases import ReleaseCheckError, Releases
+from .orchestration.update import UpdateCheckError, check_for_update, installed_version
 from .skills.discovery import all_skills, find_skill
 from .skills.safety import excluded
 
 
 def handle_ugh(raw_args, **kwargs):
-    """Handle /ugh skill upload <skill-id>|all [options]."""
+    """Handle /ugh skill upload or /ugh update check."""
     ctx = kwargs.get("ctx")
     if ctx is None:
         return json.dumps({"error": "plugin context unavailable"})
     try:
         args = shlex.split(raw_args or "")
+        if args == ["update", "check"]:
+            release_client = kwargs.get("update_client") or Releases()
+            result = check_for_update(installed_version(), release_client.list())
+            return json.dumps({"success": True, **result})
         if len(args) < 3 or args[0:2] != ["skill", "upload"]:
             raise ValueError("usage: /ugh skill upload <skill-id>|all [--to-agent NAME] [--force]")
         selector = args[2]
@@ -69,5 +75,5 @@ def handle_ugh(raw_args, **kwargs):
             except UploadError as exc:
                 results.append({"skill": skill_id, "status": "failed", "error": str(exc)})
         return json.dumps({"success": True, "agent": target, "results": results})
-    except (ValueError, UploadError) as exc:
+    except (ValueError, UploadError, ReleaseCheckError, UpdateCheckError) as exc:
         return json.dumps({"error": str(exc)})

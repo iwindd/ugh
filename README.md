@@ -8,12 +8,15 @@ The plugin supports:
 
 - `/ugh skill upload <skill-id>`
 - `/ugh skill upload all`
+- `/ugh update check` to compare the installed version with the latest stable release
 - `--to-agent <agent-name>` for a logical target agent
 - one pull request per changed skill
 - complete skill-directory uploads, including `SKILL.md`, references, templates, scripts, and assets
 - deterministic add, patch, no-op, and explicit remove behavior
 
 The plugin never modifies the curated `/skills/` catalog. It manages only `agents/<agent-name>/skills/` in the configured repository.
+
+Update checking is notification-only. It uses the public GitHub Releases API without the upload token and never downloads, installs, enables, restarts, or polls automatically. Review the release URL and run the displayed Hermes update command yourself.
 
 ## Current status
 
