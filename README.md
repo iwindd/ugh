@@ -53,3 +53,21 @@ Run locally:
     hermes plugins doctor . --ci
 
 GitHub Actions runs the offline checks for pull requests and pushes to `main`.
+
+## Installation and updates
+
+The v0.1.0 release is available at https://github.com/iwindd/ugh/releases/tag/v0.1.0.
+Install it through Hermes native plugin management:
+
+    hermes plugins install iwindd/ugh --ref <40-character-v0.1.0-commit-sha>
+
+The `--ref` form pins installation to the reviewed immutable commit. Resolve
+the SHA from the release page before installing; do not rely on the moving
+`main` branch for a reproducible deployment.
+
+Update an existing installation only through Hermes:
+
+    hermes plugins update ugh
+
+Hermes owns plugin paths, consent, enablement, and lifecycle. `ugh` does not
+auto-update, poll for updates, restart Hermes, or publish packages to PyPI.
