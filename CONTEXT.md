@@ -27,7 +27,6 @@
 
 ## Open decisions
 
-- Whether to split the GitHub adapter into separate transport, Git Data, pull-request, and bootstrap modules.
 - Whether to publish a package or keep the plugin profile-local.
 
 Update this file when domain vocabulary or accepted decisions change. Put repository-wide rules in `AGENTS.md`, stable structure in `ARCHITECTURE.md`, and executable work in GitHub Issues.

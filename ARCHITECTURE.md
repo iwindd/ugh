@@ -22,7 +22,11 @@
     │   └── safety.py                # exclusions and secret warnings
     ├── github/
     │   ├── __init__.py              # public GitHub adapter boundary
-    │   └── client.py                # authenticated REST, Git Data, and PR operations
+    │   ├── client.py                # authenticated REST transport and remote errors
+    │   ├── git_data.py              # refs, blobs, trees, commits, and branch updates
+    │   ├── pulls.py                 # pull-request lookup and creation
+    │   ├── bootstrap.py             # empty-repository initialization
+    │   └── upload.py                # upload workflow composition
     ├── orchestration/
     │   ├── __init__.py
     │   └── uploader.py              # upload use-case boundary
@@ -44,7 +48,7 @@
             -> skills
             -> github adapter
 
-`domain/` and `skills/` do not import Hermes APIs or perform network calls. `github/` owns authentication, HTTP, Git Data operations, pull-request lifecycle, bootstrap, and remote errors. `command.py` is the only boundary that reads raw Hermes command input and context. `orchestration/` coordinates the use case without becoming a second command parser.
+`domain/` and `skills/` do not import Hermes APIs or perform network calls. `github/client.py` owns authentication, HTTP, and remote errors; `git_data.py`, `pulls.py`, and `bootstrap.py` own their respective GitHub operations. `upload.py` composes those modules for the upload workflow. `command.py` is the only boundary that reads raw Hermes command input and context. `orchestration/` coordinates the use case without becoming a second command parser.
 
 ## Core invariants
 
@@ -65,7 +69,7 @@
 - `skills.discovery` can run against a temporary profile tree.
 - `skills.snapshot` and `skills.safety` can be tested without a network or token.
 - `command.handle_ugh` accepts a fake context and an injected upload boundary.
-- `github.client` is the external side-effect boundary and must be replaced by a fake transport for API tests.
+- `github.client` is the external HTTP/auth/error seam; Git Data, PR, and bootstrap modules accept that transport and can be tested with a fake client.
 
 ## Documentation ownership
 
